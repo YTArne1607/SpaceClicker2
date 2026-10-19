@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://db.onlinewebfonts.com/c/b51862d0d110bb81ea6ef748d0f78cbf?family=Sparkasse+Rg+Regular" rel="stylesheet">
+<body>
+
+  <div class="headline">
+
+    <div id="h4_text">
+    <h4>Schatzkasse - Die Sparkasse für Piraten</h4>
+    </div>
+    <img src="IMG_1344-removebg-preview.png" id="sparkasse_logo">
+    <div class="line"></div>
+  </div>
+
+  <div class="centered">
+  <input type="number" id="code" placeholder="Ihr Code">
+    <br>
+    <br>
+    <button class="btn-weiter" onclick="verify()"> Verifizieren</button>
+    <br>
+    <br>
+    <h4 id="alert"></h4>
+  </div>
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
+
+  <script>
+
+    (function(){
+        emailjs.init({
+          publicKey: "3OtfxBRzGHCLwjLvF",
+        });
+     })();
+
+    var Kontonummer = Math.floor(Math.random() * (9999999999 - 1000000000) + 1000000000);
+    var IBAN = "DE" + Math.floor(Math.random() * (9999999999 - 1000000000) + 1000000000) + Kontonummer;
+    var OBName = Math.floor(Math.random() * (999999 - 100000) + 100000);
+    var OBPin = Math.floor(Math.random() * (99999 - 10000) + 10000);
+
+    
+    var verifyCode = localStorage.getItem("verifyCode");
+    var code = document.getElementById("code");
+
+    function verify() {
+      if (code.value == verifyCode) {
+        document.getElementById("alert").innerHTML = "Erfolgreich! Sie bekommen in kürze eine E-Mail mit Ihren Zugangsdaten.";
+        setTimeout(function() {
+          window.location.assign("index.html");
+        }, 3000);
+
+        var templateParams = {
+          name: localStorage.getItem("vorname") + " " + localStorage.getItem("nachname"),
+          notes: 'Check this out!',
+          email: localStorage.getItem("email"),
+          Iban: IBAN,
+          Kontonummer: Kontonummer,
+          OBName: OBName,
+          OBPin: OBPin
+        };
+        var templateId = "template_2262fw6";
+        var serviceId = "service_schatzkasse";
+
+        emailjs.send(serviceId, templateId, templateParams).then(
+          (response) => {
+            console.log('SUCCESS!', response.status, response.text);
+          },
+          (error) => {
+            console.log('FAILED...', error);
+          },
+        );
+        
+      } else if (code.value != verifyCode) {
+        document.getElementById("alert").innerHTML = "Falscher Code. Bitte Probieren Sie es erneut.";
+      }
+    }
+  </script>
+</body>
+</html>
